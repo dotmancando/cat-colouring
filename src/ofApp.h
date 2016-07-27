@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
+#include "const.h"
 
 class ofApp : public ofBaseApp{
 
@@ -21,7 +22,10 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
     
-        ofImage catImage;
-        ofImage catColor;
+    ofImage catImage;
+    ofImage catColor;
+    ofImage bgImage;
+    int blendMode = 1;
+    void applyBlendmode(int mode);
 		
 };
