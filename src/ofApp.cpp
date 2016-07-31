@@ -22,9 +22,9 @@ void ofApp::setup(){
     colorGui.add(hue.set("H", 0, 0, 255 ));
     colorGui.add(sat.set("S", 255, 0, 255 ));
     colorGui.add(b.set("B", 255, 0, 255 ));
-    colorGui.add(opacity.set("opacity", 0.5, 0.0, 1.0 ));
-    colorGui.add(bottomUp.set("bottomUp",false ));
-
+    colorGui.add(opacity.set("opacity", 0.2, 0.0, 1.0 ));
+    colorGui.add(bottomUp.set("buttomUp",false ));
+    colorGui.add(dist.set("dist", 100.0, 50.0, 540.0 ));
 
     
     colorGui.add(extraRed.set("red", 0.5, 0.0, 1.0 ));
@@ -69,6 +69,13 @@ void ofApp::update(){
     colorShader.setUniform1f("extraGreen", extraGreen);
     colorShader.setUniform1f("extraBlue", extraBlue);
     colorShader.setUniform1f("opacity", opacity);
+    colorShader.setUniform1f("dist", dist);
+
+    if(bottomUp){
+       colorShader.setUniform1f("newName", 1.0);
+    }else{
+        colorShader.setUniform1f("newName", 0.0);
+    }
     
     catFbo.draw(0,0);
     pixelateShader.end();
@@ -94,7 +101,7 @@ void ofApp::draw(){
     colorGui.draw();
     
     ofSetColor(c);
-    ofDrawEllipse(100, 200, 50, 50);
+    ofDrawEllipse(APP_WIDTH - 100, 100, 50, 50);
 }
 
 //--------------------------------------------------------------

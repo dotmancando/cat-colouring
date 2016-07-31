@@ -33,7 +33,7 @@ class ofApp : public ofBaseApp{
     
     ofShader pixelateShader;
     ofShader colorShader;
-    bool overlay = false;
+    bool overlay = true;
     
     ofxPanel colorGui;
     ofParameter<int> hue;
@@ -44,6 +44,7 @@ class ofApp : public ofBaseApp{
     ofParameter<float> extraGreen;
     ofParameter<float> opacity;
     ofParameter<bool> bottomUp;
+    ofParameter<float> dist;
     
     ofColor c;
 

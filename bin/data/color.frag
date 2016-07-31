@@ -6,6 +6,8 @@ uniform float extraRed;
 uniform float extraGreen;
 uniform float extraBlue;
 uniform float opacity;
+uniform float newName;
+uniform float dist;
 
 bool outlineOn = false; // TURN TO 0 to TURN OUTLINE OFF
 int lineThickness = 1; // HOW THICK IS THE OUTLINE (in pixels)
@@ -27,6 +29,21 @@ void main()
     maxV = max( resultPixels[0], resultPixels[1] );
     maxV = max( maxV, resultPixels[2] );
     
+    float thisOpa;
+    float thres = 540.0 - dist;
+    
+    if(newName < 0.5){ // opacity depends on how far it is from the bottom
+//        thisOpa = pos.y / 540.0;
+        thisOpa = opacity;
+    }else{
+        if(pos.y  > thres){
+            thisOpa = (pos.y - thres)/ dist * opacity;
+        }else{
+            thisOpa = 0.0;
+        }
+    }
+    
+    
     delta = maxV - minV;
     if( maxV != 0.0 ){
         saturation = delta / maxV;
@@ -45,7 +62,7 @@ void main()
         resultPixels[0] = extraRed;
         resultPixels[1] = extraGreen;
         resultPixels[2] = extraBlue;
-        resultPixels[3] = opacity;
+        resultPixels[3] = thisOpa;
     }else{
         resultPixels[0] = 0.0;
         resultPixels[1] = 0.0;
