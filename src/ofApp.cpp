@@ -2,37 +2,99 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-    catImage = ofImage("/Volumes/KINGSTON/cat_image/6_STANDING/stand_idle/hat0/cam2/0001.png");
-    catColor = ofImage("/Volumes/KINGSTON/cat_image/dummy_red.png");
-    bgImage = ofImage("/Volumes/KINGSTON/kinect_image/finalSetup14/image_RGB_0.png");
-    ofEnableBlendMode(OF_BLENDMODE_DISABLED);
-    ///     OF_BLENDMODE_DISABLED
-    ///     OF_BLENDMODE_ALPHA
-    ///     OF_BLENDMODE_ADD
-    ///     OF_BLENDMODE_SUBTRACT
-    ///     OF_BLENDMODE_MULTIPLY
-    ///     OF_BLENDMODE_SCREEN
+    catImage = ofImage("0001.png");
+//    catColor = ofImage("/Volumes/KINGSTON/cat_image/dummy_red.png");
+    bgImage = ofImage("image_RGB_0.png");
+//    ofEnableBlendMode(OF_BLENDMODE_DISABLED);
+
+    catColorMaskFbo.allocate(CAT_IMAGE_WIDTH, CAT_IMAGE_HEIGHT);
+    catFbo.allocate(CAT_IMAGE_WIDTH, CAT_IMAGE_HEIGHT);
+    
+    pixelateShader.load("pixelation");
+    colorShader.load("color");
+    
+//    ofxPanel colorGui;
+//    ofParameter<float> extraRed;
+//    ofParameter<float> opacity;
+
+    
+    colorGui.setup("color");
+    colorGui.add(hue.set("H", 0, 0, 255 ));
+    colorGui.add(sat.set("S", 255, 0, 255 ));
+    colorGui.add(b.set("B", 255, 0, 255 ));
+    colorGui.add(opacity.set("opacity", 0.5, 0.0, 1.0 ));
+    colorGui.add(bottomUp.set("bottomUp",false ));
+
+
+    
+    colorGui.add(extraRed.set("red", 0.5, 0.0, 1.0 ));
+    colorGui.add(extraBlue.set("green", 0.5, 0.0, 1.0 ));
+    colorGui.add(extraGreen.set("blue", 0.5, 0.0, 1.0 ));
+    
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
     
+    
+    c.setHsb(hue, sat, b);
+    extraRed = c.r / 255.0;
+     extraGreen = c.g / 255.0;
+     extraBlue = c.b / 255.0;
+    
+//    c = ofColor(255,0,0);
+    
+    catFbo.begin();
+    ofClear(0,0,0,0);
+    
+    pixelateShader.begin();
+    pixelateShader.setUniform1f("pixelSize", 4.0);
+    pixelateShader.setUniform1f("extraRed", 0.0);
+    pixelateShader.setUniform1f("extraBlue", 0.0);
+    
+    catImage.draw(0,0);
+    pixelateShader.end();
+    catFbo.end(); 
+    
+    
+    
+    
+    catColorMaskFbo.begin();
+    ofClear(0,0,0,0);
+    
+    colorShader.begin();
+    colorShader.setUniform1f("pixelSize", 1.0);
+    colorShader.setUniform1f("extraRed", extraRed);
+    colorShader.setUniform1f("extraGreen", extraGreen);
+    colorShader.setUniform1f("extraBlue", extraBlue);
+    colorShader.setUniform1f("opacity", opacity);
+    
+    catFbo.draw(0,0);
+    pixelateShader.end();
+    catColorMaskFbo.end();
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
 //    ofBackground(0, 0, 0);
+    ofSetColor(255);
     bgImage.draw(0,0,APP_WIDTH, APP_HEIGHT);
-    ofColor(255);
     applyBlendmode(1);
-    catImage.draw(200,200);
-    applyBlendmode(blendMode);
-    catColor.draw(200,200);
+    catFbo.draw(200,200);
+    if(overlay){
+        applyBlendmode(blendMode);
+        catColorMaskFbo.draw(200,200);
+    }
     applyBlendmode(0);
     
     
     ofDrawBitmapStringHighlight("BLENDMODE: " + ofToString(  BLENDMODE_NAME[blendMode]), 10, APP_HEIGHT - 50);
-
+    
+    colorGui.draw();
+    
+    ofSetColor(c);
+    ofDrawEllipse(100, 200, 50, 50);
 }
 
 //--------------------------------------------------------------
@@ -79,6 +141,10 @@ void ofApp::keyPressed(int key){
 
             break;
         
+        case 'o':
+            overlay = !overlay;
+            break;
+            
     }
 
 }
@@ -109,6 +175,7 @@ void ofApp::applyBlendmode(int mode){
         case 5:
             ofEnableBlendMode(OF_BLENDMODE_SCREEN);
             break;
+            
             
             
             

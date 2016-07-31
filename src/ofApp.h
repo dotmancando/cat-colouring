@@ -2,6 +2,7 @@
 
 #include "ofMain.h"
 #include "const.h"
+#include "ofxGui.h"
 
 class ofApp : public ofBaseApp{
 
@@ -27,5 +28,24 @@ class ofApp : public ofBaseApp{
     ofImage bgImage;
     int blendMode = 1;
     void applyBlendmode(int mode);
+    ofFbo catColorMaskFbo;
+    ofFbo catFbo;
+    
+    ofShader pixelateShader;
+    ofShader colorShader;
+    bool overlay = false;
+    
+    ofxPanel colorGui;
+    ofParameter<int> hue;
+    ofParameter<int> sat;
+    ofParameter<int> b;
+    ofParameter<float> extraRed;
+    ofParameter<float> extraBlue;
+    ofParameter<float> extraGreen;
+    ofParameter<float> opacity;
+    ofParameter<bool> bottomUp;
+    
+    ofColor c;
+
 		
 };
